@@ -24,7 +24,11 @@ public class GuestService {
         return guestRepository.save(guest);
     }
 
-    public Guest update(Guest guest) {
+    public Guest update(long id, Guest updatedGuest) {
+        Guest guest = guestRepository.findById(id).orElseThrow();
+        guest.setName(updatedGuest.getName());
+        guest.setDocument(updatedGuest.getDocument());
+
         return guestRepository.save(guest);
     }
 
