@@ -1,7 +1,7 @@
-package com.birdie.birdie.guest;
+package com.birdie.birdie.service;
 
-import com.birdie.birdie.guest.Guest;
-import com.birdie.birdie.guest.GuestRepository;
+import com.birdie.birdie.model.Guest;
+import com.birdie.birdie.repository.GuestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

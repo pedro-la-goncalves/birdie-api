@@ -1,4 +1,4 @@
-package com.birdie.birdie.guest;
+package com.birdie.birdie.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
