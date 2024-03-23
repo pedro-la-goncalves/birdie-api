@@ -1,6 +1,6 @@
-package com.birdie.birdie.repository;
+package com.birdie.birdie.guest;
 
-import com.birdie.birdie.model.Guest;
+import com.birdie.birdie.guest.Guest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

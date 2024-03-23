@@ -1,7 +1,5 @@
-package com.birdie.birdie.controller;
+package com.birdie.birdie.guest;
 
-import com.birdie.birdie.model.Guest;
-import com.birdie.birdie.service.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
