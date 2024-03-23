@@ -1,6 +1,7 @@
 package com.birdie.birdie.service;
 
 import com.birdie.birdie.model.Reservation;
+import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -8,6 +9,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mockito;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
@@ -18,16 +21,17 @@ import java.util.stream.Stream;
 @ExtendWith(MockitoExtension.class)
 class ReservationServiceTest {
     @InjectMocks
+    @Spy
     ReservationService reservationService;
 
     @Test
-    void givenTwoValidDates_whenCalculatingTheDurationOfTheReservation_thenReturnTheNumberOfDaysPlusOne() {
-        LocalDate entry = LocalDate.of(2024, Month.MARCH, 22);
-        LocalDate exit = LocalDate.of(2024, Month.MARCH, 25);
+    void givenTwoValidDates_whenCalculatingTheDurationOfTheReservation_thenReturnTheNumberOfDays() {
+        LocalDate scheduledEntry = LocalDate.of(2024, Month.MARCH, 22);
+        LocalDate scheduledDeparture = LocalDate.of(2024, Month.MARCH, 25);
 
-        int numberOfDays = reservationService.getDurationInDays(entry, exit);
+        int numberOfDays = reservationService.getDurationInDays(scheduledEntry, scheduledDeparture);
 
-        Assertions.assertEquals(4, numberOfDays);
+        Assertions.assertEquals(3, numberOfDays);
     }
 
     @Test
@@ -41,22 +45,22 @@ class ReservationServiceTest {
 
     @Test
     void givenTwoValidDates_whenVerifyingHowManyWeekendDaysThePeriodHas_thenReturnTheNumberOfWeekendDays() {
-        LocalDate entry = LocalDate.of(2024, Month.MARCH, 22);
-        LocalDate exit = LocalDate.of(2024, Month.MARCH, 25);
+        LocalDate scheduledEntry = LocalDate.of(2024, Month.MARCH, 22);
+        LocalDate scheduledDeparture = LocalDate.of(2024, Month.MARCH, 25);
 
-        int numberOfWeekendDays = reservationService.getNumberOfWeekendDays(entry, exit);
+        int numberOfWeekendDays = reservationService.getNumberOfWeekendDays(scheduledEntry, scheduledDeparture);
 
         Assertions.assertEquals(2, numberOfWeekendDays);
     }
 
     @Test
     void givenTwoValidDates_whenVerifyingHowManyWorkingDaysThePeriodHas_thenReturnTheNumberOfWeekendDays() {
-        LocalDate entry = LocalDate.of(2024, Month.MARCH, 22);
-        LocalDate exit = LocalDate.of(2024, Month.MARCH, 25);
+        LocalDate scheduledEntry = LocalDate.of(2024, Month.MARCH, 22);
+        LocalDate scheduledDeparture = LocalDate.of(2024, Month.MARCH, 25);
 
-        int numberOfWeekendDays = reservationService.getNumberOfWorkingDays(entry, exit);
+        int numberOfWeekendDays = reservationService.getNumberOfWorkingDays(scheduledEntry, scheduledDeparture);
 
-        Assertions.assertEquals(2, numberOfWeekendDays);
+        Assertions.assertEquals(1, numberOfWeekendDays);
     }
 
     @Test
@@ -70,22 +74,22 @@ class ReservationServiceTest {
 
     @Test
     void givenTwoValidDates_whenCalculatingTheSumOfDailyRates_thenReturnTheSumOfDailyRates() {
-        LocalDate entry = LocalDate.of(2024, Month.MARCH, 22);
-        LocalDate exit = LocalDate.of(2024, Month.MARCH, 25);
+        LocalDate scheduledEntry = LocalDate.of(2024, Month.MARCH, 22);
+        LocalDate scheduledDeparture = LocalDate.of(2024, Month.MARCH, 25);
 
-        double sumOfDailyRates = reservationService.getSumOfDailyRates(entry, exit);
+        double sumOfDailyRates = reservationService.getSumOfDailyRates(scheduledEntry, scheduledDeparture);
 
-        Assertions.assertEquals(600.0, sumOfDailyRates);
+        Assertions.assertEquals(480.0, sumOfDailyRates);
     }
 
     @ParameterizedTest
     @MethodSource("provideReservationsForIsGuestCheckingOutLate")
-    void givenAValidExitDateAndAValidCheckoutDateTime_whenVerifyingIfGuestIsCheckingOutLate_thenReturnIfGuestIsCheckingOutLate(
-            LocalDate exit,
+    void givenAValidScheduledDepartureAndAValidCheckoutDateTime_whenVerifyingIfGuestIsCheckingOutLate_thenReturnIfGuestIsCheckingOutLate(
+            LocalDate scheduledDeparture,
             LocalDateTime checkout,
             boolean expected
     ) {
-        boolean isGuestCheckingOutLate = reservationService.isGuestCheckingOutLate(exit, checkout);
+        boolean isGuestCheckingOutLate = reservationService.isGuestCheckingOutLate(scheduledDeparture, checkout);
 
         Assertions.assertEquals(expected, isGuestCheckingOutLate);
     }
@@ -101,7 +105,7 @@ class ReservationServiceTest {
 
     @ParameterizedTest
     @MethodSource("provideReservationsForGetCheckingOutLateFee")
-    void givenIfTheDayIsAWeekendDay_whenCalculatingTheLateCheckoutFee_thenReturnTheCorrectLateCheckoutFee(boolean isWeekend, double expected) {
+    void givenIfTheDayIsAWeekendDay_whenCalculatingTheLateCheckoutFee_thenReturnTheAccordingLateCheckoutFee(boolean isWeekend, double expected) {
         double lateCheckoutFee = reservationService.getLateCheckoutFee(isWeekend);
 
         Assertions.assertEquals(expected, lateCheckoutFee);
@@ -111,6 +115,123 @@ class ReservationServiceTest {
         return Stream.of(
                 Arguments.of(true, 90.0),
                 Arguments.of(false, 60.0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideReservationsForGetParkingFee")
+    void givenTheNumberOfWorkingDaysAndNumberOfWeekendDays_whenCalculatingTheParkingFee_thenReturnTheAccordingParkingFee(
+            int numberOfWorkingDays,
+            int numberOfWeekendDays,
+            double expected
+    ) {
+        double lateCheckoutFee = reservationService.getParkingFee(numberOfWorkingDays, numberOfWeekendDays);
+
+        Assertions.assertEquals(expected, lateCheckoutFee);
+    }
+
+    private static Stream<Arguments> provideReservationsForGetParkingFee() {
+        return Stream.of(
+                Arguments.of(2, 0, 30.0),
+                Arguments.of(0, 2, 40.0),
+                Arguments.of(2, 2, 70.0),
+                Arguments.of(0, 0, 0.0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideReservationsForGetSumOfAdditionalCharges")
+    void givenAValidReservation_whenCalculatingTheSumOfAdditionalCharges_thenReturnTheAccordingSumOfAdditionalCharges(
+            Reservation reservation,
+            boolean isGuestCheckingOutLate,
+            double parkingFee,
+            double lateCheckoutFee,
+            double expected
+    ) {
+        if (isGuestCheckingOutLate) Mockito.doReturn(isGuestCheckingOutLate).when(reservationService).isGuestCheckingOutLate(Mockito.any(LocalDate.class), Mockito.any(LocalDateTime.class));
+        if (parkingFee > 0) Mockito.doReturn(parkingFee).when(reservationService).getParkingFee(Mockito.anyInt(), Mockito.anyInt());
+        if (lateCheckoutFee > 0) Mockito.doReturn(lateCheckoutFee).when(reservationService).getLateCheckoutFee(Mockito.anyBoolean());
+
+        double sumOfAdditionalCharges = reservationService.getSumOfAdditionalCharges(reservation);
+
+        Assertions.assertEquals(expected, sumOfAdditionalCharges);
+    }
+
+    private static Stream<Arguments> provideReservationsForGetSumOfAdditionalCharges() {
+        Reservation reservation1 = new Reservation();
+        reservation1.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation1.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation1.setCheckOut(LocalDateTime.parse("2024-03-25T13:00:00"));
+        reservation1.setParking(true);
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation2.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation2.setCheckOut(LocalDateTime.parse("2024-03-25T10:00:00"));
+        reservation2.setParking(true);
+
+        Reservation reservation3 = new Reservation();
+        reservation3.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation3.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation3.setCheckOut(LocalDateTime.parse("2024-03-25T15:00:00"));
+        reservation3.setParking(false);
+
+        Reservation reservation4 = new Reservation();
+        reservation4.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation4.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation4.setCheckOut(LocalDateTime.parse("2024-03-25T09:00:00"));
+        reservation4.setParking(false);
+
+        return Stream.of(
+                Arguments.of(reservation1, true, 70.0, 60.0, 130.0),
+                Arguments.of(reservation2, false, 70.0, 0.0, 70.0),
+                Arguments.of(reservation3, true, 0.0, 60.0, 60.0),
+                Arguments.of(reservation4, false, 0.0, 0.0, 0.0)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideReservationsForGetEstimatedTotal")
+    void givenAValidReservation_whenCalculatingTheEstimatedTotal_thenReturnTheAccordingEstimatedTotal(
+            Reservation reservation,
+            double parkingFee,
+            double sumOfDailyRates,
+            double expected
+    ) {
+        if (parkingFee > 0) Mockito.doReturn(parkingFee).when(reservationService).getParkingFee(Mockito.anyInt(), Mockito.anyInt());
+        if (sumOfDailyRates > 0) Mockito.doReturn(sumOfDailyRates).when(reservationService).getSumOfDailyRates(Mockito.any(LocalDate.class), Mockito.any(LocalDate.class));
+
+        double estimatedTotal = reservationService.getEstimatedTotal(reservation);
+
+        Assertions.assertEquals(expected, estimatedTotal);
+    }
+
+    private static Stream<Arguments> provideReservationsForGetEstimatedTotal() {
+        Reservation reservation1 = new Reservation();
+        reservation1.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation1.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation1.setParking(false);
+
+        Reservation reservation2 = new Reservation();
+        reservation2.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 23));
+        reservation2.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation2.setParking(false);
+
+        Reservation reservation3 = new Reservation();
+        reservation3.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 25));
+        reservation3.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 27));
+        reservation3.setParking(false);
+
+        Reservation reservation4 = new Reservation();
+        reservation4.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
+        reservation4.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
+        reservation4.setParking(true);
+
+        return Stream.of(
+                Arguments.of(reservation1, 0.0, 480.0, 480.0),
+                Arguments.of(reservation2, 0.0, 360.0, 360.0),
+                Arguments.of(reservation3, 0.0, 300.0, 300.0),
+                Arguments.of(reservation4, 30.0, 240.0, 270.0)
         );
     }
 

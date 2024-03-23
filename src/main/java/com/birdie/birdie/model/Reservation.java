@@ -5,7 +5,6 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "reservation")
@@ -15,11 +14,11 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(name="entry")
-    private LocalDate entry;
+    @Column(name="scheduled_entry")
+    private LocalDate scheduledEntry;
 
-    @Column(name="exit")
-    private LocalDate exit;
+    @Column(name="scheduled_departure")
+    private LocalDate scheduledDeparture;
 
     @Column(name="check_in")
     private LocalDateTime checkIn;
@@ -30,9 +29,13 @@ public class Reservation {
     @Column(name="parking")
     private boolean parking;
 
-    @Column(name="total")
+    @Column(name="estimated_total")
     private double estimatedTotal;
 
-    @Column(name="total")
+    @Column(name="total_charged")
     private double totalCharged;
+
+    @ManyToOne()
+    @JoinColumn(name = "guest_id")
+    private Guest guest;
 }
