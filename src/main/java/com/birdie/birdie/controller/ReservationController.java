@@ -6,10 +6,8 @@ import com.birdie.birdie.dto.UpdateReservationDTO;
 import com.birdie.birdie.model.Reservation;
 import com.birdie.birdie.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,26 +17,26 @@ public class ReservationController {
     @Autowired
     ReservationService reservationService;
 
-    @RequestMapping(value = "/reservations", method = RequestMethod.GET)
-    List<Reservation> findAll() { return reservationService.findAll(); }
+    @GetMapping(value = "/reservations")
+    ResponseEntity<List<ReservationDTO>> findAll() { return reservationService.findAll(); }
 
-    @RequestMapping(value = "/reservations/{id}", method = RequestMethod.GET)
-    Reservation findOne(@PathVariable(value = "id") long id) {
+    @GetMapping(value = "/reservations/{id}")
+    ResponseEntity<ReservationDTO> findOne(@PathVariable(value = "id") long id) {
         return reservationService.findOne(id);
     }
 
-    @RequestMapping(value = "/reservations", method = RequestMethod.POST)
-    Reservation create(CreateReservationDTO createReservationDTO) {
+    @PostMapping(value = "/reservations")
+    ResponseEntity<ReservationDTO> create(@RequestBody CreateReservationDTO createReservationDTO) {
         return reservationService.create(createReservationDTO);
     }
 
-    @RequestMapping(value = "/reservations/{id}", method = RequestMethod.PUT)
-    ReservationDTO update(@PathVariable(value = "id") long id, UpdateReservationDTO updateReservationDTO) {
+    @PutMapping(value = "/reservations/{id}")
+    ResponseEntity<ReservationDTO> update(@PathVariable(value = "id") long id, @RequestBody UpdateReservationDTO updateReservationDTO) {
         return reservationService.update(id, updateReservationDTO);
     }
 
-    @RequestMapping(value = "/reservations/{id}", method = RequestMethod.DELETE)
-    void delete(@PathVariable(value = "id") long id) {
-        reservationService.delete(id);
+    @DeleteMapping(value = "/reservations/{id}")
+    ResponseEntity<Void> delete(@PathVariable(value = "id") long id) {
+        return reservationService.delete(id);
     }
 }

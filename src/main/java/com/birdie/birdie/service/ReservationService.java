@@ -1,14 +1,20 @@
 package com.birdie.birdie.service;
 
 import com.birdie.birdie.dto.CreateReservationDTO;
+import com.birdie.birdie.dto.GuestDTO;
 import com.birdie.birdie.dto.ReservationDTO;
 import com.birdie.birdie.dto.UpdateReservationDTO;
 import com.birdie.birdie.enums.EAdditionalCharges;
 import com.birdie.birdie.enums.EDailyRate;
 import com.birdie.birdie.enums.EDefaultHours;
+import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.model.Reservation;
+import com.birdie.birdie.repository.GuestRepository;
 import com.birdie.birdie.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -17,57 +23,93 @@ import java.time.*;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class ReservationService {
     @Autowired
     ReservationRepository reservationRepository;
 
-    public List<Reservation> findAll() {
-        return reservationRepository.findAll();
+    @Autowired
+    GuestRepository guestRepository;
+
+    public ResponseEntity<List<ReservationDTO>> findAll() {
+        List<Reservation> reservations = reservationRepository.findAll();
+
+        if (reservations.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+        }
+
+        List<ReservationDTO> reservationDTOList = reservations.stream().map(ReservationDTO::new).toList();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(reservationDTOList);
     }
 
-    public Reservation findOne(long id) {
-        return reservationRepository.findById(id).orElseThrow();
+    public ResponseEntity<ReservationDTO> findOne(long id) {
+        Optional<Reservation> reservation = reservationRepository.findById(id);
+
+        if (reservation.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+
+        ReservationDTO reservationDTO = new ReservationDTO(reservation.get());
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(reservationDTO);
     }
 
-    public Reservation create(CreateReservationDTO createReservationDTO) {
-        Reservation reservation = new Reservation();
-        reservation.setScheduledEntry(LocalDate.parse(createReservationDTO.scheduledEntry()));
-        reservation.setScheduledDeparture(LocalDate.parse(createReservationDTO.scheduledDeparture()));
-        reservation.setParking(createReservationDTO.parking());
+    public ResponseEntity<ReservationDTO> create(CreateReservationDTO createReservationDTO) {
+        Optional<Guest> guest = guestRepository.findById(createReservationDTO.guestId());
 
-        return reservationRepository.save(reservation);
+        if (guest.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .build();
+        }
+
+        Reservation createdReservation = reservationRepository.save(createReservationDTO.toReservation(guest.get()));
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ReservationDTO(createdReservation));
     }
 
-    public ReservationDTO update(long id, UpdateReservationDTO updateReservationDTO) {
-        Reservation reservation = reservationRepository.findById(id).orElseThrow();
+    public ResponseEntity<ReservationDTO> update(long id, UpdateReservationDTO updateReservationDTO) {
+        Optional<Reservation> reservation = reservationRepository.findById(id);
 
-        if (!Objects.isNull(updateReservationDTO.scheduledEntry())) reservation.setScheduledEntry(LocalDate.parse(updateReservationDTO.scheduledEntry()));
-        if (!Objects.isNull(updateReservationDTO.scheduledDeparture())) reservation.setScheduledDeparture(LocalDate.parse(updateReservationDTO.scheduledDeparture()));
-        if (!Objects.isNull(updateReservationDTO.checkIn())) reservation.setCheckIn(LocalDateTime.parse(updateReservationDTO.checkIn()));
-        if (!Objects.isNull(updateReservationDTO.checkOut())) reservation.setCheckOut(LocalDateTime.parse(updateReservationDTO.checkOut()));
-        if (!Objects.isNull(updateReservationDTO.parking())) reservation.setParking(updateReservationDTO.parking());
-        if (!Objects.isNull(updateReservationDTO.estimatedTotal())) reservation.setEstimatedTotal(updateReservationDTO.estimatedTotal());
-        if (!Objects.isNull(updateReservationDTO.totalCharged())) reservation.setTotalCharged(updateReservationDTO.totalCharged());
+        if (reservation.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
 
-        reservationRepository.save(reservation);
+        Reservation savedReservation = reservationRepository.save(updateReservationDTO.toReservation(reservation.get().getGuest()));
 
-        return new ReservationDTO(
-                reservation.getId(),
-                String.valueOf(reservation.getGuest().getId()),
-                String.valueOf(reservation.getScheduledEntry()),
-                String.valueOf(reservation.getScheduledDeparture()),
-                String.valueOf(reservation.getCheckIn()),
-                String.valueOf(reservation.getCheckOut()),
-                reservation.isParking(),
-                reservation.getEstimatedTotal(),
-                reservation.getTotalCharged()
-        );
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new ReservationDTO(savedReservation));
     }
 
-    public void delete(long id) {
+    public ResponseEntity<Void> delete(long id) {
+        Optional<Reservation> reservation = reservationRepository.findById(id);
+
+        if (reservation.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
+
         reservationRepository.deleteById(id);
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
     }
 
     public double getEstimatedTotal(Reservation reservation) {

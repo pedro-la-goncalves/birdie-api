@@ -1,12 +1,13 @@
 package com.birdie.birdie.controller;
 
+import com.birdie.birdie.dto.CreateGuestDTO;
+import com.birdie.birdie.dto.GuestDTO;
+import com.birdie.birdie.dto.UpdateGuestDTO;
 import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.service.GuestService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -17,25 +18,25 @@ public class GuestController {
     GuestService guestService;
 
     @RequestMapping(value="/guests", method= RequestMethod.GET)
-    List<Guest> findAll() { return guestService.findAll(); }
+    ResponseEntity<List<GuestDTO>> findAll() { return guestService.findAll(); }
 
     @RequestMapping(value="/guests/{id}", method= RequestMethod.GET)
-    Guest findOne(@PathVariable(value = "id") long id) {
+    ResponseEntity<GuestDTO> findOne(@PathVariable(value = "id") long id) {
         return guestService.findOne(id);
     }
 
     @RequestMapping(value="/guests", method= RequestMethod.POST)
-    Guest create(Guest guest) {
-        return guestService.create(guest);
+    ResponseEntity<GuestDTO> create(@RequestBody CreateGuestDTO createGuestDTO) {
+        return guestService.create(createGuestDTO);
     }
 
     @RequestMapping(value="/guests/{id}", method= RequestMethod.PUT)
-    Guest update(@PathVariable(value = "id") long id, Guest guest) {
-        return guestService.update(id, guest);
+    ResponseEntity<GuestDTO> update(@PathVariable(value = "id") long id, @RequestBody UpdateGuestDTO updateGuestDTO) {
+        return guestService.update(id, updateGuestDTO);
     }
 
     @RequestMapping(value="/guests/{id}", method= RequestMethod.DELETE)
-    void delete(@PathVariable(value = "id") long id) {
-        guestService.delete(id);
+    ResponseEntity<Void> delete(@PathVariable(value = "id") long id) {
+        return guestService.delete(id);
     }
 }
