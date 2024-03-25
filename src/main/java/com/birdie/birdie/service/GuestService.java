@@ -76,7 +76,7 @@ public class GuestService {
                 .build();
     }
 
-    // TODO: Adaptar outros métodos para considerar exclusão lógica
+    // TODO: Adapt other methods to consider the soft delete logic
     public ResponseEntity<Void> softDelete(long id) {
         Guest guest = guestRepository.getReferenceById(id);
         guest.softDelete();

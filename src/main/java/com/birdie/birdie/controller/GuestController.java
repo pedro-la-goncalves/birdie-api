@@ -40,7 +40,6 @@ public class GuestController {
     }
 
     @DeleteMapping(value = "/{id}")
-    @Transactional
     ResponseEntity<Void> delete(@PathVariable(value = "id") long id) {
         return guestService.delete(id);
     }
