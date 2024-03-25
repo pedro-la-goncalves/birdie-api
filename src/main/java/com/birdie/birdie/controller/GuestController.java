@@ -5,37 +5,42 @@ import com.birdie.birdie.dto.GuestDTO;
 import com.birdie.birdie.dto.UpdateGuestDTO;
 import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.service.GuestService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/guests")
 public class GuestController {
     @Autowired
     GuestService guestService;
 
-    @RequestMapping(value="/guests", method= RequestMethod.GET)
+    @GetMapping
     ResponseEntity<List<GuestDTO>> findAll() { return guestService.findAll(); }
 
-    @RequestMapping(value="/guests/{id}", method= RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     ResponseEntity<GuestDTO> findOne(@PathVariable(value = "id") long id) {
         return guestService.findOne(id);
     }
 
-    @RequestMapping(value="/guests", method= RequestMethod.POST)
-    ResponseEntity<GuestDTO> create(@RequestBody CreateGuestDTO createGuestDTO) {
+    @PostMapping
+    @Transactional
+    ResponseEntity<GuestDTO> create(@RequestBody @Valid CreateGuestDTO createGuestDTO) {
         return guestService.create(createGuestDTO);
     }
 
-    @RequestMapping(value="/guests/{id}", method= RequestMethod.PUT)
-    ResponseEntity<GuestDTO> update(@PathVariable(value = "id") long id, @RequestBody UpdateGuestDTO updateGuestDTO) {
-        return guestService.update(id, updateGuestDTO);
+    @PutMapping
+    @Transactional
+    ResponseEntity<GuestDTO> update(@RequestBody @Valid UpdateGuestDTO updateGuestDTO) {
+        return guestService.update(updateGuestDTO);
     }
 
-    @RequestMapping(value="/guests/{id}", method= RequestMethod.DELETE)
+    @DeleteMapping(value = "/{id}")
+    @Transactional
     ResponseEntity<Void> delete(@PathVariable(value = "id") long id) {
         return guestService.delete(id);
     }

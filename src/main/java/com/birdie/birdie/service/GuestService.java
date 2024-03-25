@@ -5,6 +5,7 @@ import com.birdie.birdie.dto.GuestDTO;
 import com.birdie.birdie.dto.UpdateGuestDTO;
 import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.repository.GuestRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,43 +36,28 @@ public class GuestService {
     }
 
     public ResponseEntity<GuestDTO> findOne(long id) {
-        Optional<Guest> guest = guestRepository.findById(id);
-
-        if (guest.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
-
-        GuestDTO guestDTO = new GuestDTO(guest.get());
+        Guest guest = guestRepository.findById(id).orElseThrow();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(guestDTO);
+                .body(new GuestDTO(guest));
     }
 
     public ResponseEntity<GuestDTO> create(CreateGuestDTO createGuestDTO) {
-        Guest createdGuest = guestRepository.save(createGuestDTO.toGuest());
+        Guest createdGuest = guestRepository.save(new Guest(createGuestDTO));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new GuestDTO(createdGuest));
     }
 
-    public ResponseEntity<GuestDTO> update(long id, UpdateGuestDTO updateGuestDTO) {
-        Optional<Guest> guest = guestRepository.findById(id);
-
-        if (guest.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
-
-        Guest savedGuest = guestRepository.save(updateGuestDTO.toGuest());
+    public ResponseEntity<GuestDTO> update(UpdateGuestDTO updateGuestDTO) {
+        Guest guest = guestRepository.getReferenceById(updateGuestDTO.id());
+        Guest updatedGuest = guest.update(updateGuestDTO);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new GuestDTO(savedGuest));
+                .body(new GuestDTO(updatedGuest));
     }
 
     public ResponseEntity<Void> delete(long id) {
@@ -84,6 +70,16 @@ public class GuestService {
         }
 
         guestRepository.deleteById(id);
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    // TODO: Adaptar outros métodos para considerar exclusão lógica
+    public ResponseEntity<Void> softDelete(long id) {
+        Guest guest = guestRepository.getReferenceById(id);
+        guest.softDelete();
 
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
