@@ -1,9 +1,6 @@
 package com.birdie.birdie.service;
 
-import com.birdie.birdie.dto.CreateReservationDTO;
-import com.birdie.birdie.dto.GuestDTO;
-import com.birdie.birdie.dto.ReservationDTO;
-import com.birdie.birdie.dto.UpdateReservationDTO;
+import com.birdie.birdie.dto.*;
 import com.birdie.birdie.enums.EAdditionalCharges;
 import com.birdie.birdie.enums.EDailyRate;
 import com.birdie.birdie.enums.EDefaultHours;
@@ -17,10 +14,13 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import javax.naming.NoPermissionException;
+import javax.naming.OperationNotSupportedException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,9 +29,6 @@ import java.util.Optional;
 public class ReservationService {
     @Autowired
     ReservationRepository reservationRepository;
-
-    @Autowired
-    GuestRepository guestRepository;
 
     public ResponseEntity<List<ReservationDTO>> findAll() {
         List<Reservation> reservations = reservationRepository.findAll();
@@ -49,51 +46,61 @@ public class ReservationService {
     }
 
     public ResponseEntity<ReservationDTO> findOne(long id) {
-        Optional<Reservation> reservation = reservationRepository.findById(id);
-
-        if (reservation.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
-
-        ReservationDTO reservationDTO = new ReservationDTO(reservation.get());
+        Reservation reservation = reservationRepository.findById(id).orElseThrow();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(reservationDTO);
+                .body(new ReservationDTO(reservation));
     }
 
-    public ResponseEntity<ReservationDTO> create(CreateReservationDTO createReservationDTO) {
-        Optional<Guest> guest = guestRepository.findById(createReservationDTO.guestId());
+    public ResponseEntity<CreatedReservationDTO> create(CreateReservationDTO createReservationDTO) {
+        Reservation reservation = new Reservation(createReservationDTO);
+        reservation.setEstimatedTotal(getEstimatedTotal(reservation));
 
-        if (guest.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .build();
-        }
-
-        Reservation createdReservation = reservationRepository.save(createReservationDTO.toReservation(guest.get()));
+        Reservation createdReservation = reservationRepository.save(reservation);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ReservationDTO(createdReservation));
+                .body(new CreatedReservationDTO(createdReservation));
     }
 
-    public ResponseEntity<ReservationDTO> update(long id, UpdateReservationDTO updateReservationDTO) {
-        Optional<Reservation> reservation = reservationRepository.findById(id);
-
-        if (reservation.isEmpty()) {
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .build();
-        }
-
-        Reservation savedReservation = reservationRepository.save(updateReservationDTO.toReservation(reservation.get().getGuest()));
+    public ResponseEntity<ReservationDTO> update(UpdateReservationDTO updateReservationDTO) {
+        Reservation reservation = reservationRepository.getReferenceById(updateReservationDTO.id());
+        Reservation updatedReservation = reservation.update(updateReservationDTO);
 
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ReservationDTO(savedReservation));
+                .body(new ReservationDTO(updatedReservation));
+    }
+
+    public ResponseEntity<CheckedInReservationDTO> checkIn(CheckInReservationDTO checkInReservationDTO) {
+        // TODO: Add validation -> field must be of 'yyyy-MM-dd HH:mm' format
+        LocalDateTime checkIn = LocalDateTime.parse(checkInReservationDTO.checkIn());
+
+        Reservation reservation = reservationRepository.getReferenceById(checkInReservationDTO.id());
+
+        Reservation updatedReservation = reservation.checkIn(checkIn);
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new CheckedInReservationDTO(updatedReservation));
+    }
+
+    public ResponseEntity<CheckedOutReservationDTO> checkOut(CheckOutReservationDTO checkOutReservationDTO) {
+        LocalDateTime checkOut = LocalDateTime.parse(checkOutReservationDTO.checkOut());
+
+        Reservation reservation = reservationRepository.getReferenceById(checkOutReservationDTO.id());
+
+        // TODO: Add validation -> a "not checked-in reservation" can not check-out
+        Reservation updatedReservation = reservation.checkOut(checkOut);
+
+        List<TotalChargedDetailDTO> totalChargedDetails = getTotalChargedDetails(reservation);
+
+        updatedReservation.setTotalCharged(getTotalCharged(reservation));
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(new CheckedOutReservationDTO(updatedReservation, totalChargedDetails));
     }
 
     public ResponseEntity<Void> delete(long id) {
@@ -110,6 +117,52 @@ public class ReservationService {
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .build();
+    }
+
+    // TODO: Adapt other methods to consider the soft delete logic
+    public ResponseEntity<Void> softDelete(long id) {
+        Reservation reservation = reservationRepository.getReferenceById(id);
+        reservation.softDelete();
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
+    public List<TotalChargedDetailDTO> getTotalChargedDetails(Reservation reservation) {
+        List<TotalChargedDetailDTO> totalChargedDetails = new ArrayList<>();
+        boolean isGuestUsingParkingLot = reservation.isParking();
+        boolean isGuestCheckingOutLate = isGuestCheckingOutLate(reservation.getScheduledDeparture(), reservation.getCheckOut());
+
+        if (isGuestUsingParkingLot) {
+            int numberOfWorkingDays = getNumberOfWorkingDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
+            int numberOfWeekendDays = getNumberOfWeekendDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
+
+            if (numberOfWorkingDays > 0) {
+                double value = EAdditionalCharges.PARKING_WORKDAY.getValue() * numberOfWorkingDays;
+                totalChargedDetails.add(new TotalChargedDetailDTO("Estacionamento (dias úteis)", value));
+            }
+
+            if (numberOfWeekendDays > 0) {
+                double value = EAdditionalCharges.PARKING_WEEKEND.getValue() * numberOfWeekendDays;
+                totalChargedDetails.add(new TotalChargedDetailDTO(String.valueOf(EAdditionalCharges.PARKING_WEEKEND), value));
+            }
+        }
+
+        if (isGuestCheckingOutLate) {
+            double value = getLateCheckoutFee(isWeekend(reservation.getCheckOut().toLocalDate()));
+            totalChargedDetails.add(new TotalChargedDetailDTO(String.valueOf(EAdditionalCharges.LATE_CHECKOUT), value));
+        }
+
+        return totalChargedDetails;
+    }
+
+    public double getTotalCharged(Reservation reservation) {
+        double totalCharged = reservation.getEstimatedTotal();
+
+        totalCharged += getSumOfAdditionalCharges(reservation);
+
+        return totalCharged;
     }
 
     public double getEstimatedTotal(Reservation reservation) {
@@ -129,13 +182,8 @@ public class ReservationService {
     public double getSumOfAdditionalCharges(Reservation reservation) {
         double sumOfAdditionalCharges = 0.0;
         boolean isGuestCheckingOutLate = isGuestCheckingOutLate(reservation.getScheduledDeparture(), reservation.getCheckOut());
-        boolean isGuestUsingParkingLot = reservation.isParking();
 
         if (isGuestCheckingOutLate) sumOfAdditionalCharges += getLateCheckoutFee(isWeekend(reservation.getCheckOut().toLocalDate()));
-        if (isGuestUsingParkingLot) sumOfAdditionalCharges += getParkingFee(
-                getNumberOfWorkingDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture()),
-                getNumberOfWeekendDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture())
-        );
 
         return sumOfAdditionalCharges;
     }

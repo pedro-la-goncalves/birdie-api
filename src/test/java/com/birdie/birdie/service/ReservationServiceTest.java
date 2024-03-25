@@ -1,7 +1,6 @@
 package com.birdie.birdie.service;
 
 import com.birdie.birdie.model.Reservation;
-import org.hibernate.mapping.Any;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -144,12 +143,10 @@ class ReservationServiceTest {
     void givenAValidReservation_whenCalculatingTheSumOfAdditionalCharges_thenReturnTheAccordingSumOfAdditionalCharges(
             Reservation reservation,
             boolean isGuestCheckingOutLate,
-            double parkingFee,
             double lateCheckoutFee,
             double expected
     ) {
         if (isGuestCheckingOutLate) Mockito.doReturn(isGuestCheckingOutLate).when(reservationService).isGuestCheckingOutLate(Mockito.any(LocalDate.class), Mockito.any(LocalDateTime.class));
-        if (parkingFee > 0) Mockito.doReturn(parkingFee).when(reservationService).getParkingFee(Mockito.anyInt(), Mockito.anyInt());
         if (lateCheckoutFee > 0) Mockito.doReturn(lateCheckoutFee).when(reservationService).getLateCheckoutFee(Mockito.anyBoolean());
 
         double sumOfAdditionalCharges = reservationService.getSumOfAdditionalCharges(reservation);
@@ -162,31 +159,15 @@ class ReservationServiceTest {
         reservation1.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
         reservation1.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
         reservation1.setCheckOut(LocalDateTime.parse("2024-03-25T13:00:00"));
-        reservation1.setParking(true);
 
         Reservation reservation2 = new Reservation();
         reservation2.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
         reservation2.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
         reservation2.setCheckOut(LocalDateTime.parse("2024-03-25T10:00:00"));
-        reservation2.setParking(true);
-
-        Reservation reservation3 = new Reservation();
-        reservation3.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
-        reservation3.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
-        reservation3.setCheckOut(LocalDateTime.parse("2024-03-25T15:00:00"));
-        reservation3.setParking(false);
-
-        Reservation reservation4 = new Reservation();
-        reservation4.setScheduledEntry(LocalDate.of(2024, Month.MARCH, 22));
-        reservation4.setScheduledDeparture(LocalDate.of(2024, Month.MARCH, 25));
-        reservation4.setCheckOut(LocalDateTime.parse("2024-03-25T09:00:00"));
-        reservation4.setParking(false);
 
         return Stream.of(
-                Arguments.of(reservation1, true, 70.0, 60.0, 130.0),
-                Arguments.of(reservation2, false, 70.0, 0.0, 70.0),
-                Arguments.of(reservation3, true, 0.0, 60.0, 60.0),
-                Arguments.of(reservation4, false, 0.0, 0.0, 0.0)
+                Arguments.of(reservation1, true, 70.0, 70.0),
+                Arguments.of(reservation2, false, 0.0, 0.0)
         );
     }
 

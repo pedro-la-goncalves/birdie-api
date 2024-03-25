@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -18,7 +19,7 @@ public class DefaultExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ExceptionHandler({ MethodArgumentNotValidException.class, DateTimeParseException.class })
     public ResponseEntity badRequest(MethodArgumentNotValidException exception) {
         List<FieldError> fieldErrorList = exception.getFieldErrors();
         List<InvalidFieldDTO> invalidFieldDTOList = fieldErrorList.stream().map(InvalidFieldDTO::new).toList();

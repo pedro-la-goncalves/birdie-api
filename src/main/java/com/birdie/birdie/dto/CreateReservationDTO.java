@@ -1,30 +1,15 @@
 package com.birdie.birdie.dto;
 
-import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.model.Reservation;
 import com.fasterxml.jackson.annotation.JsonAlias;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDate;
-
-@JsonIgnoreProperties(ignoreUnknown = true)
 public record CreateReservationDTO(
-        @JsonAlias("guest_id") long guestId,
-        @JsonAlias("scheduled_entry") String scheduledEntry,
-        @JsonAlias("scheduled_departure") String scheduledDeparture,
-        @JsonAlias("parking") boolean parking
+        @NotNull @Valid GuestDTO guest,
+        @NotBlank @JsonAlias(value = "scheduled_entry") String scheduledEntry,
+        @NotBlank @JsonAlias(value = "scheduled_departure") String scheduledDeparture,
+        @NotNull boolean parking
 ) {
-    public CreateReservationDTO(Reservation reservation) {
-        this(reservation.getGuest().getId(), String.valueOf(reservation.getScheduledEntry()), String.valueOf(reservation.getScheduledDeparture()), reservation.isParking());
-    }
-
-    public Reservation toReservation(Guest guest) {
-        Reservation reservation = new Reservation();
-        reservation.setGuest(guest);
-        reservation.setScheduledEntry(LocalDate.parse(this.scheduledEntry));
-        reservation.setScheduledDeparture(LocalDate.parse(this.scheduledDeparture));
-        reservation.setParking(this.parking);
-
-        return reservation;
-    }
 }

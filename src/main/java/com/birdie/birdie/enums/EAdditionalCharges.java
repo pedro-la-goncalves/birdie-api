@@ -6,8 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EAdditionalCharges {
-    PARKING_WORKDAY(15.0),
-    PARKING_WEEKEND(20.0);
+    PARKING_WORKDAY(15.0, null),
+    PARKING_WEEKEND(20.0, null),
+    LATE_CHECKOUT(null, 0.5);
 
-    private final double value;
+    private final Double value;
+    private final Double multiplier;
 }

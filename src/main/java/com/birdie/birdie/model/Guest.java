@@ -1,6 +1,7 @@
 package com.birdie.birdie.model;
 
 import com.birdie.birdie.dto.CreateGuestDTO;
+import com.birdie.birdie.dto.GuestDTO;
 import com.birdie.birdie.dto.UpdateGuestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,11 +28,18 @@ public class Guest {
     @Column(name = "phone", nullable = false)
     private String phone;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+//    @Column(name = "deleted_at")
+//    private LocalDateTime deletedAt;
 
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
     private List<Reservation> reservations;
+
+    public Guest(GuestDTO guestDTO) {
+        this.id = guestDTO.id();
+        this.name = guestDTO.name();
+        this.document = guestDTO.document();
+        this.phone = guestDTO.phone();
+    }
 
     public Guest(CreateGuestDTO createGuestDTO) {
         this.name = createGuestDTO.name();
@@ -48,6 +56,6 @@ public class Guest {
     }
 
     public void softDelete() {
-        this.deletedAt = LocalDateTime.now();
+//        this.deletedAt = LocalDateTime.now();
     }
 }

@@ -1,9 +1,10 @@
 package com.birdie.birdie.dto;
 
 import com.birdie.birdie.model.Guest;
+import jakarta.validation.constraints.NotNull;
 
 public record GuestDTO(
-        long id,
+        @NotNull long id,
         String name,
         String document,
         String phone
