@@ -19,7 +19,7 @@ public class DefaultExceptionHandler {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler({ MethodArgumentNotValidException.class, DateTimeParseException.class })
+    @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity badRequest(MethodArgumentNotValidException exception) {
         List<FieldError> fieldErrorList = exception.getFieldErrors();
         List<InvalidFieldDTO> invalidFieldDTOList = fieldErrorList.stream().map(InvalidFieldDTO::new).toList();

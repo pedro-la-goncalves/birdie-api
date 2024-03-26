@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 import java.util.Optional;
@@ -21,6 +22,22 @@ public class GuestService {
 
     public ResponseEntity<List<GuestDTO>> findAll() {
         List<Guest> guests = guestRepository.findAll();
+
+        if (guests.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+        }
+
+        List<GuestDTO> guestDTOList = guests.stream().map(GuestDTO::new).toList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(guestDTOList);
+    }
+
+    public ResponseEntity<List<GuestDTO>> findAllInHotel() {
+        List<Guest> guests = guestRepository.findAllInHotel();
 
         if (guests.isEmpty()) {
             return ResponseEntity

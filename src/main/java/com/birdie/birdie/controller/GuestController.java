@@ -22,6 +22,9 @@ public class GuestController {
     @GetMapping
     ResponseEntity<List<GuestDTO>> findAll() { return guestService.findAll(); }
 
+    @GetMapping(value = "/in-hotel")
+    ResponseEntity<List<GuestDTO>> findAllInHotel() { return guestService.findAllInHotel(); }
+
     @GetMapping(value = "/{id}")
     ResponseEntity<GuestDTO> findOne(@PathVariable(value = "id") long id) {
         return guestService.findOne(id);
