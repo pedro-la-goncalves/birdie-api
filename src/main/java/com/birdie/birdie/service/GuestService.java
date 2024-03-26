@@ -52,6 +52,22 @@ public class GuestService {
                 .body(guestDTOList);
     }
 
+    public ResponseEntity<List<GuestDTO>> findAllNonCheckedInWithReservation() {
+        List<Guest> guests = guestRepository.findAllNonCheckedInWithReservation();
+
+        if (guests.isEmpty()) {
+            return ResponseEntity
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+        }
+
+        List<GuestDTO> guestDTOList = guests.stream().map(GuestDTO::new).toList();
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(guestDTOList);
+    }
+
     public ResponseEntity<GuestDTO> findOne(long id) {
         Guest guest = guestRepository.findById(id).orElseThrow();
 

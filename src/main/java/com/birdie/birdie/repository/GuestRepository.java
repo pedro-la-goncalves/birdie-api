@@ -12,4 +12,7 @@ public interface GuestRepository extends JpaRepository<Guest, Long> {
 
     @Query("SELECT g FROM Guest g INNER JOIN Reservation r ON g.id = r.id WHERE r.checkIn IS NOT NULL AND r.checkOut IS NULL")
     List<Guest> findAllInHotel();
+
+    @Query("SELECT g FROM Guest g INNER JOIN Reservation r ON g.id = r.id WHERE r.checkIn IS NULL")
+    List<Guest> findAllNonCheckedInWithReservation();
 }

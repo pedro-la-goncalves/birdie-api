@@ -25,6 +25,9 @@ public class GuestController {
     @GetMapping(value = "/in-hotel")
     ResponseEntity<List<GuestDTO>> findAllInHotel() { return guestService.findAllInHotel(); }
 
+    @GetMapping(value = "/non-checked-in-with-reservation")
+    ResponseEntity<List<GuestDTO>> findAllNonCheckedIn() { return guestService.findAllNonCheckedInWithReservation(); }
+
     @GetMapping(value = "/{id}")
     ResponseEntity<GuestDTO> findOne(@PathVariable(value = "id") long id) {
         return guestService.findOne(id);
