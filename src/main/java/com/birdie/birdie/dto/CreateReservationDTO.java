@@ -8,8 +8,8 @@ import jakarta.validation.constraints.NotNull;
 
 public record CreateReservationDTO(
         @NotNull @Valid GuestDTO guest,
-        @NotBlank @JsonAlias(value = "scheduled_entry") String scheduledEntry,
-        @NotBlank @JsonAlias(value = "scheduled_departure") String scheduledDeparture,
+        @NotBlank String scheduledEntry,
+        @NotBlank String scheduledDeparture,
         @NotNull boolean parking
 ) {
 }

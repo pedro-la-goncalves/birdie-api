@@ -4,25 +4,19 @@ import com.birdie.birdie.dto.*;
 import com.birdie.birdie.enums.EAdditionalCharges;
 import com.birdie.birdie.enums.EDailyRate;
 import com.birdie.birdie.enums.EDefaultHours;
-import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.model.Reservation;
-import com.birdie.birdie.repository.GuestRepository;
 import com.birdie.birdie.repository.ReservationRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.naming.NoPermissionException;
-import javax.naming.OperationNotSupportedException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.*;
 import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,9 +42,11 @@ public class ReservationService {
     public ResponseEntity<ReservationDTO> findOne(long id) {
         Reservation reservation = reservationRepository.findById(id).orElseThrow();
 
+        ReservationDTO reservationWithTotalChargedDetailsField = reservation.getCheckOut() == null ? new ReservationDTO(reservation) : new ReservationDTO(reservation, getTotalChargedDetails(reservation));
+
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(new ReservationDTO(reservation));
+                .body(reservationWithTotalChargedDetailsField);
     }
 
     public ResponseEntity<CreatedReservationDTO> create(CreateReservationDTO createReservationDTO) {
@@ -134,35 +130,55 @@ public class ReservationService {
         boolean isGuestUsingParkingLot = reservation.isParking();
         boolean isGuestCheckingOutLate = isGuestCheckingOutLate(reservation.getScheduledDeparture(), reservation.getCheckOut());
 
-        if (isGuestUsingParkingLot) {
-            int numberOfWorkingDays = getNumberOfWorkingDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
-            int numberOfWeekendDays = getNumberOfWeekendDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
+        int numberOfWorkingDays = getNumberOfWorkingDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
+        int numberOfWeekendDays = getNumberOfWeekendDays(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
 
-            if (numberOfWorkingDays > 0) {
-                double value = EAdditionalCharges.PARKING_WORKDAY.getValue() * numberOfWorkingDays;
-                totalChargedDetails.add(new TotalChargedDetailDTO("Estacionamento (dias úteis)", value));
+        if (numberOfWorkingDays > 0) {
+            totalChargedDetails.add(new TotalChargedDetailDTO(
+                    String.valueOf(EDailyRate.WORKDAY),
+                    EDailyRate.WORKDAY.getValue(),
+                    numberOfWorkingDays,
+                    EDailyRate.WORKDAY.getValue() * numberOfWorkingDays
+                    ));
+
+            if (isGuestUsingParkingLot) {
+                totalChargedDetails.add(new TotalChargedDetailDTO(
+                        String.valueOf(EAdditionalCharges.PARKING_WORKDAY),
+                        EAdditionalCharges.PARKING_WORKDAY.getValue(),
+                        numberOfWorkingDays,
+                        EAdditionalCharges.PARKING_WORKDAY.getValue() * numberOfWorkingDays
+                ));
             }
+        }
 
-            if (numberOfWeekendDays > 0) {
-                double value = EAdditionalCharges.PARKING_WEEKEND.getValue() * numberOfWeekendDays;
-                totalChargedDetails.add(new TotalChargedDetailDTO(String.valueOf(EAdditionalCharges.PARKING_WEEKEND), value));
+        if (numberOfWeekendDays > 0) {
+            totalChargedDetails.add(new TotalChargedDetailDTO(
+                    String.valueOf(EDailyRate.WEEKEND),
+                    EDailyRate.WEEKEND.getValue(),
+                    numberOfWeekendDays,
+                    EDailyRate.WEEKEND.getValue() * numberOfWeekendDays
+            ));
+
+            if (isGuestUsingParkingLot) {
+                totalChargedDetails.add(new TotalChargedDetailDTO(
+                        String.valueOf(EAdditionalCharges.PARKING_WEEKEND),
+                        EAdditionalCharges.PARKING_WEEKEND.getValue(),
+                        numberOfWeekendDays,
+                        EAdditionalCharges.PARKING_WEEKEND.getValue() * numberOfWeekendDays
+                        ));
             }
         }
 
         if (isGuestCheckingOutLate) {
-            double value = getLateCheckoutFee(isWeekend(reservation.getCheckOut().toLocalDate()));
-            totalChargedDetails.add(new TotalChargedDetailDTO(String.valueOf(EAdditionalCharges.LATE_CHECKOUT), value));
+            totalChargedDetails.add(new TotalChargedDetailDTO(
+                    String.valueOf(EAdditionalCharges.LATE_CHECKOUT),
+                    isWeekend(reservation.getCheckOut().toLocalDate()) ? EDailyRate.WEEKEND.getValue() : EDailyRate.WORKDAY.getValue(),
+                    EAdditionalCharges.LATE_CHECKOUT.getMultiplier(),
+                    getLateCheckoutFee(isWeekend(reservation.getCheckOut().toLocalDate()))
+            ));
         }
 
         return totalChargedDetails;
-    }
-
-    public double getTotalCharged(Reservation reservation) {
-        double totalCharged = reservation.getEstimatedTotal();
-
-        totalCharged += getSumOfAdditionalCharges(reservation);
-
-        return totalCharged;
     }
 
     public double getEstimatedTotal(Reservation reservation) {
@@ -177,6 +193,14 @@ public class ReservationService {
         estimatedTotal += getSumOfDailyRates(reservation.getScheduledEntry(), reservation.getScheduledDeparture());
 
         return estimatedTotal;
+    }
+
+    public double getTotalCharged(Reservation reservation) {
+        double totalCharged = reservation.getEstimatedTotal();
+
+        totalCharged += getSumOfAdditionalCharges(reservation);
+
+        return totalCharged;
     }
 
     public double getSumOfAdditionalCharges(Reservation reservation) {

@@ -10,13 +10,13 @@ import java.time.LocalDate;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record UpdateReservationDTO(
         @JsonAlias("id") long id,
-        @JsonAlias("guest_id") long guestId,
+        @JsonAlias("guest") GuestDTO guest,
         @JsonAlias("scheduled_entry") String scheduledEntry,
         @JsonAlias("scheduled_departure") String scheduledDeparture,
         @JsonAlias("parking") boolean parking
 ) {
     public UpdateReservationDTO(Reservation reservation) {
-        this(reservation.getId(), reservation.getGuest().getId(), String.valueOf(reservation.getScheduledEntry()), String.valueOf(reservation.getScheduledDeparture()), reservation.isParking());
+        this(reservation.getId(), new GuestDTO(reservation.getGuest()), String.valueOf(reservation.getScheduledEntry()), String.valueOf(reservation.getScheduledDeparture()), reservation.isParking());
     }
 
     public Reservation toReservation(Guest guest) {

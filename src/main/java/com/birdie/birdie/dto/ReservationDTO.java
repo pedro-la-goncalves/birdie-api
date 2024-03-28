@@ -4,6 +4,8 @@ import com.birdie.birdie.model.Reservation;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.List;
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ReservationDTO(
         long id,
@@ -14,7 +16,9 @@ public record ReservationDTO(
         String checkOut,
         boolean parking,
         double estimatedTotal,
-        double totalCharged
+        double totalCharged,
+
+        List<TotalChargedDetailDTO> totalChargedDetails
 ) {
     public ReservationDTO(Reservation reservation) {
         this(
@@ -26,7 +30,22 @@ public record ReservationDTO(
                 String.valueOf(reservation.getCheckOut()),
                 reservation.isParking(),
                 reservation.getEstimatedTotal(),
-                reservation.getTotalCharged()
+                reservation.getTotalCharged(),
+                null
+        );
+    }
+    public ReservationDTO(Reservation reservation, List<TotalChargedDetailDTO> totalChargedDetails) {
+        this(
+                reservation.getId(),
+                new GuestDTO(reservation.getGuest()),
+                String.valueOf(reservation.getScheduledEntry()),
+                String.valueOf(reservation.getScheduledDeparture()),
+                String.valueOf(reservation.getCheckIn()),
+                String.valueOf(reservation.getCheckOut()),
+                reservation.isParking(),
+                reservation.getEstimatedTotal(),
+                reservation.getTotalCharged(),
+                totalChargedDetails
         );
     }
 }

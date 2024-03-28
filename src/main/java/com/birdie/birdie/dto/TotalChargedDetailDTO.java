@@ -2,5 +2,7 @@ package com.birdie.birdie.dto;
 
 public record TotalChargedDetailDTO(
         String type,
-        double total
+        double unitValue,
+        double multiplier,
+        double totalValue
 ) {}

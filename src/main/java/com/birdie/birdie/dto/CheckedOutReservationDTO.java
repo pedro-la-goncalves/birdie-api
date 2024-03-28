@@ -6,7 +6,7 @@ import java.util.List;
 
 public record CheckedOutReservationDTO(
         long id,
-        long guestId,
+        GuestDTO guest,
         String scheduledEntry,
         String scheduledDeparture,
         String checkIn,
@@ -19,7 +19,7 @@ public record CheckedOutReservationDTO(
     public CheckedOutReservationDTO(Reservation reservation, List<TotalChargedDetailDTO> totalChargedDetails) {
         this(
                 reservation.getId(),
-                reservation.getGuest().getId(),
+                new GuestDTO(reservation.getGuest()),
                 String.valueOf(reservation.getScheduledEntry()),
                 String.valueOf(reservation.getScheduledDeparture()),
                 String.valueOf(reservation.getCheckIn()),

@@ -1,7 +1,6 @@
 package com.birdie.birdie.controller;
 
 import com.birdie.birdie.dto.*;
-import com.birdie.birdie.model.Reservation;
 import com.birdie.birdie.service.ReservationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
