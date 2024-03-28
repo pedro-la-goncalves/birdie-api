@@ -1,4 +1,4 @@
-# BirdieUi
+# BirdieApi
 
 Bem vindos! 👋
 
