@@ -23,14 +23,41 @@ class ReservationServiceTest {
     @Spy
     ReservationService reservationService;
 
-    @Test
-    void givenTwoValidDates_whenCalculatingTheDurationOfTheReservation_thenReturnTheNumberOfDays() {
-        LocalDate scheduledEntry = LocalDate.of(2024, Month.MARCH, 22);
-        LocalDate scheduledDeparture = LocalDate.of(2024, Month.MARCH, 25);
+    @ParameterizedTest
+    @MethodSource("provideValidReservationsForCalculatingTheDurationOfTheReservation")
+    void givenTwoValidDates_whenCalculatingTheDurationOfTheReservation_thenReturnTheNumberOfDays(
+            LocalDate scheduledEntry,
+            LocalDate scheduledDeparture,
+            int expected
+    ) {
+        int durationInDays = reservationService.getDurationInDays(scheduledEntry, scheduledDeparture);
 
-        int numberOfDays = reservationService.getDurationInDays(scheduledEntry, scheduledDeparture);
+        Assertions.assertEquals(expected, durationInDays);
+    }
 
-        Assertions.assertEquals(3, numberOfDays);
+    private static Stream<Arguments> provideValidReservationsForCalculatingTheDurationOfTheReservation() {
+        return Stream.of(
+                Arguments.of(LocalDate.of(2024, Month.MARCH, 22), LocalDate.of(2024, Month.MARCH, 25), 3),
+                Arguments.of(LocalDate.of(2024, Month.MARCH, 30), LocalDate.of(2024, Month.APRIL, 3), 4)
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideInvalidReservationsForCalculatingTheDurationOfTheReservation")
+    void givenTwoInvalidDates_whenCalculatingTheDurationOfTheReservation_thenThrowBadRequestExce(
+            LocalDate scheduledEntry,
+            LocalDate scheduledDeparture
+    ) {
+        Assertions.assertThrows(ArithmeticException.class ,() -> {
+            reservationService.getDurationInDays(scheduledEntry, scheduledDeparture);
+        });
+    }
+
+    private static Stream<Arguments> provideInvalidReservationsForCalculatingTheDurationOfTheReservation() {
+        return Stream.of(
+                Arguments.of(LocalDate.of(2024, Month.MARCH, 22), LocalDate.of(2024, Month.MARCH, 22)),
+                Arguments.of(LocalDate.of(2024, Month.MARCH, 22), LocalDate.of(2024, Month.APRIL, 21))
+        );
     }
 
     @Test

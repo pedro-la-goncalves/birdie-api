@@ -47,8 +47,8 @@ public class Reservation {
     private Guest guest;
 
     public Reservation(CreateReservationDTO createReservationDTO) {
-        this.scheduledEntry = LocalDate.parse(createReservationDTO.scheduledEntry());
-        this.scheduledDeparture = LocalDate.parse(createReservationDTO.scheduledDeparture());
+        this.scheduledEntry = createReservationDTO.scheduledEntry();
+        this.scheduledDeparture = createReservationDTO.scheduledDeparture();
         this.parking = createReservationDTO.parking();
         this.guest = new Guest(createReservationDTO.guest());
     }
