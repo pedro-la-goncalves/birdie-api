@@ -62,9 +62,8 @@ public class Reservation {
     }
 
     public Reservation update(UpdateReservationDTO updateReservationDTO) {
-        if (updateReservationDTO.scheduledEntry() != null) this.scheduledEntry = LocalDate.parse(updateReservationDTO.scheduledEntry());
-        if (updateReservationDTO.scheduledDeparture() != null) this.scheduledDeparture = LocalDate.parse(updateReservationDTO.scheduledDeparture());
-        if (updateReservationDTO.scheduledDeparture() != null) this.scheduledDeparture = LocalDate.parse(updateReservationDTO.scheduledDeparture());
+        if (updateReservationDTO.scheduledEntry() != null) this.scheduledEntry = updateReservationDTO.scheduledEntry();
+        if (updateReservationDTO.scheduledDeparture() != null) this.scheduledDeparture = updateReservationDTO.scheduledDeparture();
         this.parking = updateReservationDTO.parking();
 
         return this;

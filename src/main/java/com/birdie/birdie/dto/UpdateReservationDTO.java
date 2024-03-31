@@ -25,7 +25,6 @@ public record UpdateReservationDTO(
         @JsonFormat(pattern = "yyyy-MM-dd")
         @FutureOrPresent
         LocalDate scheduledDeparture,
-        @NotNull
         boolean parking
 ) {
     public UpdateReservationDTO(Reservation reservation) {
