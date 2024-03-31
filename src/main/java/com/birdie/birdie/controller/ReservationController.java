@@ -38,7 +38,7 @@ public class ReservationController {
 
     @PatchMapping(value = "/check-in")
     @Transactional
-    ResponseEntity<CheckedInReservationDTO> checkIn(@RequestBody CheckInReservationDTO checkInReservationDTO) {
+    ResponseEntity<CheckedInReservationDTO> checkIn(@RequestBody @Valid CheckInReservationDTO checkInReservationDTO) {
         return reservationService.checkIn(checkInReservationDTO);
     }
 

@@ -2,6 +2,7 @@ package com.birdie.birdie.model;
 
 import com.birdie.birdie.dto.CreateReservationDTO;
 import com.birdie.birdie.dto.UpdateReservationDTO;
+import com.birdie.birdie.enums.EDefaultHours;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
@@ -54,6 +55,11 @@ public class Reservation {
     @JoinColumn(name = "guest_id")
     private Guest guest;
 
+    @AssertFalse(message = "os campos 'scheduled_entry' e 'scheduled_departure' devem ser diferentes")
+    private boolean isScheduledEntryAndScheduledDepartureEquals() {
+        return this.scheduledEntry.isEqual(this.scheduledDeparture);
+    }
+
     public Reservation(CreateReservationDTO createReservationDTO) {
         this.scheduledEntry = createReservationDTO.scheduledEntry();
         this.scheduledDeparture = createReservationDTO.scheduledDeparture();
@@ -78,6 +84,8 @@ public class Reservation {
         this.checkOut = checkOut;
         return this;
     }
+
+
 
     public void softDelete() {
 //        this.deletedAt = LocalDateTime.now();

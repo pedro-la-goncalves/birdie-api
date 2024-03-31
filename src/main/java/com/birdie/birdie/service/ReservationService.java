@@ -71,7 +71,7 @@ public class ReservationService {
 
     public ResponseEntity<CheckedInReservationDTO> checkIn(CheckInReservationDTO checkInReservationDTO) {
         // TODO: Add validation -> field must be of 'yyyy-MM-dd HH:mm' format
-        LocalDateTime checkIn = LocalDateTime.parse(checkInReservationDTO.checkIn());
+        LocalDateTime checkIn = checkInReservationDTO.checkIn();
 
         Reservation reservation = reservationRepository.getReferenceById(checkInReservationDTO.id());
 
