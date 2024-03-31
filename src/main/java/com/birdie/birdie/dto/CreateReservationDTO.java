@@ -3,6 +3,7 @@ package com.birdie.birdie.dto;
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -24,4 +25,8 @@ public record CreateReservationDTO(
         @NotNull
         boolean parking
 ) {
+        @AssertFalse(message = "os campos 'scheduled_entry' e 'scheduled_departure' devem ser diferentes")
+        private boolean isScheduledEntryAndScheduledDepartureEquals() {
+                return this.scheduledEntry.isEqual(this.scheduledDeparture);
+        }
 }

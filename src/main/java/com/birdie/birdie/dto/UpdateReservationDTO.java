@@ -3,28 +3,41 @@ package com.birdie.birdie.dto;
 import com.birdie.birdie.model.Guest;
 import com.birdie.birdie.model.Reservation;
 import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record UpdateReservationDTO(
-        @JsonAlias("id") long id,
-        @JsonAlias("guest") GuestDTO guest,
-        @JsonAlias("scheduled_entry") String scheduledEntry,
-        @JsonAlias("scheduled_departure") String scheduledDeparture,
-        @JsonAlias("parking") boolean parking
+        @NotNull
+        long id,
+        @Valid
+        GuestDTO guest,
+        @JsonAlias(value = "scheduled_entry")
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        @FutureOrPresent
+        LocalDate scheduledEntry,
+        @JsonAlias(value = "scheduled_departure")
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        @FutureOrPresent
+        LocalDate scheduledDeparture,
+        @NotNull
+        boolean parking
 ) {
     public UpdateReservationDTO(Reservation reservation) {
-        this(reservation.getId(), new GuestDTO(reservation.getGuest()), String.valueOf(reservation.getScheduledEntry()), String.valueOf(reservation.getScheduledDeparture()), reservation.isParking());
+        this(reservation.getId(), new GuestDTO(reservation.getGuest()), reservation.getScheduledEntry(), reservation.getScheduledDeparture(), reservation.isParking());
     }
 
     public Reservation toReservation(Guest guest) {
         Reservation reservation = new Reservation();
         reservation.setId(this.id);
         reservation.setGuest(guest);
-        reservation.setScheduledEntry(LocalDate.parse(this.scheduledEntry));
-        reservation.setScheduledDeparture(LocalDate.parse(this.scheduledDeparture));
+        reservation.setScheduledEntry(this.scheduledEntry);
+        reservation.setScheduledDeparture(this.scheduledDeparture);
         reservation.setParking(this.parking);
 
         return reservation;

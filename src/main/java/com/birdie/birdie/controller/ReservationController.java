@@ -32,7 +32,7 @@ public class ReservationController {
 
     @PutMapping
     @Transactional
-    ResponseEntity<ReservationDTO> update(@RequestBody UpdateReservationDTO updateReservationDTO) {
+    ResponseEntity<ReservationDTO> update(@RequestBody @Valid UpdateReservationDTO updateReservationDTO) {
         return reservationService.update(updateReservationDTO);
     }
 

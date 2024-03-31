@@ -3,6 +3,10 @@ package com.birdie.birdie.model;
 import com.birdie.birdie.dto.CreateReservationDTO;
 import com.birdie.birdie.dto.UpdateReservationDTO;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,15 +23,19 @@ public class Reservation {
     private long id;
 
     @Column(name="scheduled_entry")
+    @FutureOrPresent
     private LocalDate scheduledEntry;
 
     @Column(name="scheduled_departure")
+    @FutureOrPresent
     private LocalDate scheduledDeparture;
 
     @Column(name="check_in")
+    @PastOrPresent
     private LocalDateTime checkIn;
 
     @Column(name="check_out")
+    @PastOrPresent
     private LocalDateTime checkOut;
 
     @Column(name="parking")
