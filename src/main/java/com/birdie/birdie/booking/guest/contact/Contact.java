@@ -5,7 +5,14 @@ import com.birdie.birdie.booking.guest.contact.dto.ContactCreationDTO;
 import com.birdie.birdie.booking.guest.contact.dto.ContactDTO;
 import com.birdie.birdie.booking.guest.contact.dto.ContactUpdateDTO;
 import jakarta.persistence.*;
+import lombok.*;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
+@Entity
 public class Contact {
 
     @Id

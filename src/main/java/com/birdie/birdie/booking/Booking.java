@@ -7,9 +7,15 @@ import com.birdie.birdie.booking.dto.BookingUpdateDTO;
 import com.birdie.birdie.booking.guest.Guest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
+import lombok.*;
 
 import java.time.LocalDate;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 public class Booking {
 

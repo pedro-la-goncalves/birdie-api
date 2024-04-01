@@ -6,9 +6,15 @@ import com.birdie.birdie.booking.accommodation.dto.AccommodationUpdateDTO;
 import com.birdie.birdie.booking.accommodation.dto.AccommodationCreationDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.*;
 
 import java.util.List;
 
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode
 @Entity
 public class Accommodation {
 
