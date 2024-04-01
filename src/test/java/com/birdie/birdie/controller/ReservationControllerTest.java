@@ -1,8 +1,9 @@
 package com.birdie.birdie.controller;
 
-import com.birdie.birdie.dto.CreateReservationDTO;
-import com.birdie.birdie.dto.GuestDTO;
-import com.birdie.birdie.dto.UpdateReservationDTO;
+import com.birdie.birdie.mvc.controller.ReservationController;
+import com.birdie.birdie.mvc.dto.CreateReservationDTO;
+import com.birdie.birdie.mvc.dto.GuestDTO;
+import com.birdie.birdie.mvc.dto.UpdateReservationDTO;
 import com.birdie.birdie.service.ReservationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;

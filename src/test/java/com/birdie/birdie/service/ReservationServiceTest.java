@@ -1,6 +1,6 @@
 package com.birdie.birdie.service;
 
-import com.birdie.birdie.model.Reservation;
+import com.birdie.birdie.mvc.model.Reservation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
