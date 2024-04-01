@@ -1,7 +1,7 @@
 package com.birdie.birdie.ddd.hotel.booking.dto;
 
+import com.birdie.birdie.ddd.hotel.booking.accommodation.dto.AccommodationDTO;
 import com.birdie.birdie.ddd.hotel.booking.guest.dto.GuestDTO;
-import com.birdie.birdie.ddd.hotel.booking.room.dto.RoomDTO;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -23,7 +23,7 @@ public record BookingUpdateDTO(
     GuestDTO guest,
 
     @Valid
-    RoomDTO room
+    AccommodationDTO accommodation
 
 ) {
 }

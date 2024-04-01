@@ -1,7 +1,7 @@
 package com.birdie.birdie.ddd.hotel.booking.dto;
 
-import com.birdie.birdie.ddd.hotel.booking.guest.dto.GuestDTO;
-import com.birdie.birdie.ddd.hotel.booking.room.dto.RoomDTO;
+import com.birdie.birdie.ddd.hotel.booking.accommodation.Accommodation;
+import com.birdie.birdie.ddd.hotel.booking.guest.Guest;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -23,10 +23,10 @@ public record BookingCreationDTO(
         LocalDate departure,
 
         @Valid
-        GuestDTO guest,
+        Guest guest,
 
         @Valid
-        RoomDTO room
+        Accommodation accommodation
 
 ) {
 }

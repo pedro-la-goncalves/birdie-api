@@ -1,9 +1,9 @@
-package com.birdie.birdie.ddd.hotel.booking.room.dto;
+package com.birdie.birdie.ddd.hotel.booking.accommodation.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public record RoomDTO(
+public record AccommodationCreationDTO(
 
         @NotNull
         Long id,

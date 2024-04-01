@@ -1,27 +1,39 @@
 package com.birdie.birdie.ddd.hotel.booking.guest;
 
+import com.birdie.birdie.ddd.hotel.booking.Booking;
+import com.birdie.birdie.ddd.hotel.booking.guest.contact.Contact;
 import com.birdie.birdie.ddd.hotel.booking.guest.dto.GuestDTO;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode
+@Entity
 public class Guest {
 
-    @NotNull
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank
+    @Column
     private String name;
 
-    @NotBlank
+    @Column
     private String surname;
 
+    @Column
     private String socialName;
+
+    @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
+    private List<Contact> contacts;
+
+    @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
+    private List<Booking> bookings;
 
     public Guest(GuestDTO guest) {
         this.id = guest.id();
