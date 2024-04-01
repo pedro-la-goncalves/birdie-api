@@ -7,9 +7,11 @@ import com.birdie.birdie.booking.dto.BookingUpdateDTO;
 import com.birdie.birdie.booking.guest.Guest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.PastOrPresent;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
@@ -30,6 +32,14 @@ public class Booking {
     @Column
     @FutureOrPresent
     private LocalDate departure;
+
+    @Column(name = "check_in")
+    @PastOrPresent
+    private LocalDateTime checkIn;
+
+    @Column(name = "check_out")
+    @PastOrPresent
+    private LocalDateTime checkOut;
 
     @ManyToOne()
     @JoinColumn(name = "guest_id")
@@ -57,6 +67,18 @@ public class Booking {
         if (booking.departure() != null) this.departure = booking.departure();
         if (booking.guest() != null) this.guest = new Guest(booking.guest());
         if (booking.accommodation() != null) this.accommodation = new Accommodation(booking.accommodation());
+
+        return this;
+    }
+
+    public Booking setCheckIn(LocalDateTime checkIn) {
+        this.checkIn = checkIn;
+
+        return this;
+    }
+
+    public Booking setCheckOut(LocalDateTime checkOut) {
+        this.checkOut = checkOut;
 
         return this;
     }
