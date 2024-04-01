@@ -16,13 +16,13 @@ public class AreaService {
     AreaRepository areaRepository;
 
     public ResponseEntity<List<Area>> findAll() {
-        List<Area> area = this.areaRepository.findAll();
-        return ResponseEntity.status(HttpStatus.OK).body(bookings);
+        List<Area> areas = this.areaRepository.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(areas);
     }
 
     public ResponseEntity<Area> findOne(Long id) {
         Area area = this.areaRepository.findById(id).orElseThrow();
-        return ResponseEntity.status(HttpStatus.OK).body(booking);
+        return ResponseEntity.status(HttpStatus.OK).body(area);
     }
 
     public ResponseEntity<Area> create(AreaCreationDTO area) {
