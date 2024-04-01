@@ -2,7 +2,9 @@ package com.birdie.birdie.booking.guest;
 
 import com.birdie.birdie.booking.Booking;
 import com.birdie.birdie.booking.guest.contact.Contact;
+import com.birdie.birdie.booking.guest.dto.GuestCreationDTO;
 import com.birdie.birdie.booking.guest.dto.GuestDTO;
+import com.birdie.birdie.booking.guest.dto.GuestUpdateDTO;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -40,6 +42,20 @@ public class Guest {
         if (guest.name() != null) this.name = guest.name();
         if (guest.surname() != null) this.surname = guest.surname();
         if (guest.socialName() != null) this.socialName = guest.socialName();
+    }
+
+    public Guest(GuestCreationDTO guest) {
+        this.name = guest.name();
+        if (guest.surname() != null) this.surname = guest.surname();
+        if (guest.socialName() != null) this.socialName = guest.socialName();
+    }
+
+    public Guest update(GuestUpdateDTO guest) {
+        if (guest.name() != null) this.name = guest.name();
+        if (guest.surname() != null) this.surname = guest.surname();
+        if (guest.socialName() != null) this.socialName = guest.socialName();
+
+        return this;
     }
 
 }
