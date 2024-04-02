@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/api/hotel/bookings/check-in")
+@RequestMapping("/api/booking/check-in")
 public class CheckInController {
 
     @Autowired
