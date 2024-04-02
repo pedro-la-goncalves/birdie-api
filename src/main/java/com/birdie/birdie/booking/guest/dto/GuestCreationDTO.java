@@ -1,19 +1,25 @@
 package com.birdie.birdie.booking.guest.dto;
 
+import com.birdie.birdie.booking.guest.contact.dto.ContactIndirectCreationDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-public record GuestCreationDTO(
+import java.util.List;
 
-        @NotNull
-        Long id,
+@Getter
+@AllArgsConstructor
+public class GuestCreationDTO {
 
         @NotBlank
-        String name,
+        String name;
 
-        String surname,
+        String surname;
 
-        String socialName
+        String socialName;
 
-) {
+        @Valid
+        List<ContactIndirectCreationDTO> contacts;
+
 }
