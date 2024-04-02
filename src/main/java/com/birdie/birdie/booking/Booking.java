@@ -4,6 +4,7 @@ import com.birdie.birdie.booking.accommodation.Accommodation;
 import com.birdie.birdie.booking.dto.BookingCreationDTO;
 import com.birdie.birdie.booking.dto.BookingDTO;
 import com.birdie.birdie.booking.dto.BookingUpdateDTO;
+import com.birdie.birdie.booking.expenses.Expense;
 import com.birdie.birdie.booking.guest.Guest;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -12,6 +13,7 @@ import lombok.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,6 +50,9 @@ public class Booking {
     @ManyToOne()
     @JoinColumn(name = "guest_id")
     private Accommodation accommodation;
+
+    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    private List<Expense> expenses;
 
     public Booking(BookingDTO booking) {
         this.id = booking.id();
