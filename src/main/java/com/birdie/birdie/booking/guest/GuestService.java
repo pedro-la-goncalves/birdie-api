@@ -1,8 +1,10 @@
 package com.birdie.birdie.booking.guest;
 
+import com.birdie.birdie.booking.guest.contact.Contact;
+import com.birdie.birdie.booking.guest.contact.ContactRepository;
 import com.birdie.birdie.booking.guest.contact.ContactService;
-import com.birdie.birdie.booking.guest.contact.dto.ContactCreationDTO;
 import com.birdie.birdie.booking.guest.dto.GuestCreationDTO;
+import com.birdie.birdie.booking.guest.dto.GuestDTO;
 import com.birdie.birdie.booking.guest.dto.GuestUpdateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +20,9 @@ public class GuestService {
     GuestRepository guestRepository;
 
     @Autowired
+    ContactRepository contactRepository;
+
+    @Autowired
     ContactService contactService;
 
     public ResponseEntity<List<Guest>> findAll() {
@@ -30,18 +35,21 @@ public class GuestService {
         return ResponseEntity.status(HttpStatus.OK).body(guest);
     }
 
-    public ResponseEntity<Guest> create(GuestCreationDTO guest) {
+    public ResponseEntity<GuestDTO> create(GuestCreationDTO guest) {
         Guest newGuest = new Guest(guest);
         Guest createdGuest = this.guestRepository.save(newGuest);
 
-        guest.getContacts().forEach(contact -> {
-            ContactCreationDTO contactCreationDTO = new ContactCreationDTO(contact.type(), contact.value(), createdGuest);
-            this.contactService.create(contactCreationDTO);
-        });
+        // create contacts
+        List<Contact> contacts = guest.getContacts().stream().map(contact -> {
+            Contact newContact = new Contact(contact.type(), contact.value(), createdGuest);
+            return this.contactRepository.save(newContact);
+        }).toList();
 
-        Guest guestWithContacts = this.guestRepository.findById(createdGuest.getId()).orElseThrow();
+        createdGuest.setContacts(contacts);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(guestWithContacts);
+        GuestDTO guestDTO = new GuestDTO(createdGuest);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(guestDTO);
     }
 
     public ResponseEntity<Guest> update(GuestUpdateDTO guest) {

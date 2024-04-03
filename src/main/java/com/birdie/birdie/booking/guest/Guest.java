@@ -5,10 +5,10 @@ import com.birdie.birdie.booking.guest.contact.Contact;
 import com.birdie.birdie.booking.guest.dto.GuestCreationDTO;
 import com.birdie.birdie.booking.guest.dto.GuestDTO;
 import com.birdie.birdie.booking.guest.dto.GuestUpdateDTO;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -32,8 +32,10 @@ public class Guest {
     @Column
     private String socialName;
 
+    @Column
+    private LocalDate birthdate;
+
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
-    @JsonBackReference
     private List<Contact> contacts;
 
     @OneToMany(mappedBy = "guest", cascade = CascadeType.ALL)
@@ -44,18 +46,21 @@ public class Guest {
         if (guest.name() != null) this.name = guest.name();
         if (guest.surname() != null) this.surname = guest.surname();
         if (guest.socialName() != null) this.socialName = guest.socialName();
+        if (guest.birthdate() != null) this.birthdate = guest.birthdate();
     }
 
     public Guest(GuestCreationDTO guest) {
         this.name = guest.getName();
         if (guest.getSurname() != null) this.surname = guest.getSurname();
         if (guest.getSocialName() != null) this.socialName = guest.getSocialName();
+        if (guest.getBirthdate() != null) this.birthdate = guest.getBirthdate();
     }
 
     public Guest update(GuestUpdateDTO guest) {
         if (guest.name() != null) this.name = guest.name();
         if (guest.surname() != null) this.surname = guest.surname();
         if (guest.socialName() != null) this.socialName = guest.socialName();
+        if (guest.birthdate() != null) this.birthdate = guest.birthdate();
 
         return this;
     }

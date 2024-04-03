@@ -1,6 +1,7 @@
 package com.birdie.birdie.booking.guest;
 
 import com.birdie.birdie.booking.guest.dto.GuestCreationDTO;
+import com.birdie.birdie.booking.guest.dto.GuestDTO;
 import com.birdie.birdie.booking.guest.dto.GuestUpdateDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class GuestController {
 
     @PostMapping
     @Transactional
-    ResponseEntity<Guest> create(@RequestBody @Valid GuestCreationDTO guest) { return this.guestService.create(guest); }
+    ResponseEntity<GuestDTO> create(@RequestBody @Valid GuestCreationDTO guest) { return this.guestService.create(guest); }
 
     @PutMapping
     @Transactional

@@ -4,7 +4,6 @@ import com.birdie.birdie.booking.guest.Guest;
 import com.birdie.birdie.booking.guest.contact.dto.ContactCreationDTO;
 import com.birdie.birdie.booking.guest.contact.dto.ContactDTO;
 import com.birdie.birdie.booking.guest.contact.dto.ContactUpdateDTO;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -28,9 +27,14 @@ public class Contact {
     private String value;
 
     @ManyToOne
-    @JsonManagedReference
     @JoinColumn(name = "guest_id")
     private Guest guest;
+
+    public Contact(EContactType type, String value, Guest guest) {
+        this.type = type;
+        this.value = value;
+        this.guest = guest;
+    }
 
     public Contact(ContactDTO contact) {
         this.id = contact.id();

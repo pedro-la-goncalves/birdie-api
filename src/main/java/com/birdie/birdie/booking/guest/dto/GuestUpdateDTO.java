@@ -1,7 +1,11 @@
 package com.birdie.birdie.booking.guest.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 
+import java.time.LocalDate;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record GuestUpdateDTO(
 
         @NotNull
@@ -11,7 +15,9 @@ public record GuestUpdateDTO(
 
         String surname,
 
-        String socialName
+        String socialName,
+
+        LocalDate birthdate
 
 ) {
 }
