@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
 
@@ -20,14 +21,14 @@ public class GuestController {
     GuestService guestService;
 
     @GetMapping
-    ResponseEntity<List<Guest>> findAll() { return this.guestService.findAll(); }
+    ResponseEntity<List<GuestDTO>> findAll() { return this.guestService.findAll(); }
 
     @GetMapping(value = "/{id}")
-    ResponseEntity<Guest> findOne(@PathVariable(value = "id") Long id) { return this.guestService.findOne(id); }
+    ResponseEntity<GuestDTO> findOne(@PathVariable(value = "id") Long id) { return this.guestService.findOne(id); }
 
     @PostMapping
     @Transactional
-    ResponseEntity<GuestDTO> create(@RequestBody @Valid GuestCreationDTO guest) { return this.guestService.create(guest); }
+    ResponseEntity<GuestDTO> create(@RequestBody @Valid GuestCreationDTO guest, UriComponentsBuilder uriComponentsBuilder) { return this.guestService.create(guest, uriComponentsBuilder); }
 
     @PutMapping
     @Transactional

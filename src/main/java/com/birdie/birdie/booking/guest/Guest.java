@@ -54,6 +54,7 @@ public class Guest {
         if (guest.getSurname() != null) this.surname = guest.getSurname();
         if (guest.getSocialName() != null) this.socialName = guest.getSocialName();
         if (guest.getBirthdate() != null) this.birthdate = guest.getBirthdate();
+        if (guest.getContacts() != null) this.contacts = guest.getContacts().stream().map(contact -> new Contact(contact.type(), contact.value(), this)).toList();
     }
 
     public Guest update(GuestUpdateDTO guest) {
