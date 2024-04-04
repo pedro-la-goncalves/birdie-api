@@ -1,7 +1,5 @@
 package com.birdie.birdie.booking.guest;
 
-import com.birdie.birdie.booking.guest.contact.ContactRepository;
-import com.birdie.birdie.booking.guest.contact.ContactService;
 import com.birdie.birdie.booking.guest.dto.GuestCreationDTO;
 import com.birdie.birdie.booking.guest.dto.GuestDTO;
 import com.birdie.birdie.booking.guest.dto.GuestUpdateDTO;
@@ -18,12 +16,6 @@ public class GuestService {
 
     @Autowired
     GuestRepository guestRepository;
-
-    @Autowired
-    ContactRepository contactRepository;
-
-    @Autowired
-    ContactService contactService;
 
     public ResponseEntity<List<GuestDTO>> findAll() {
         List<GuestDTO> guests = this.guestRepository.findAll().stream().map(GuestDTO::new).toList();
