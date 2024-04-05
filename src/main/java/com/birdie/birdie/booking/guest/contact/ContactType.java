@@ -1,6 +1,6 @@
 package com.birdie.birdie.booking.guest.contact;
 
-public enum EContactType {
+public enum ContactType {
     PHONE,
     EMAIL,
     OTHER;

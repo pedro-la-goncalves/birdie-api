@@ -1,6 +1,6 @@
 package com.birdie.birdie.booking.expenses.dto;
 
-import com.birdie.birdie.booking.expenses.EExpenseType;
+import com.birdie.birdie.booking.expenses.ExpenseType;
 import jakarta.validation.constraints.NotNull;
 
 public record ExpenseDTO(
@@ -8,7 +8,7 @@ public record ExpenseDTO(
         @NotNull
         Long id,
 
-        EExpenseType type,
+        ExpenseType type,
 
         String title,
 

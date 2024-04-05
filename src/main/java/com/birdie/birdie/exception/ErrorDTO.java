@@ -1,6 +1,6 @@
 package com.birdie.birdie.exception;
 
-public interface IErrorDTO {
+public interface ErrorDTO {
     String type = null;
     String message = null;
 

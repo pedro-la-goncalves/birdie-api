@@ -25,7 +25,7 @@ public class Expense {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private EExpenseType type;
+    private ExpenseType type;
 
     @Column
     private String title;

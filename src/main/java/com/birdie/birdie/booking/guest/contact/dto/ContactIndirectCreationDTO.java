@@ -1,8 +1,8 @@
 package com.birdie.birdie.booking.guest.contact.dto;
 
-import com.birdie.birdie.booking.guest.contact.EContactType;
+import com.birdie.birdie.booking.guest.contact.ContactType;
 import com.birdie.birdie.booking.guest.dto.GuestDTO;
-import com.birdie.birdie.util.annotation.ContactFields;
+import com.birdie.birdie.booking.guest.contact.annotation.ContactFields;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import jakarta.validation.constraints.NotNull;
 public record ContactIndirectCreationDTO(
 
     @NotNull
-    EContactType type,
+    ContactType type,
 
     @NotBlank
     String value,

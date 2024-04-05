@@ -1,6 +1,6 @@
 package com.birdie.birdie.booking.expenses;
 
-public enum EExpenseType {
+public enum ExpenseType {
     AMOUNT,
     PERCENTAGE;
 }

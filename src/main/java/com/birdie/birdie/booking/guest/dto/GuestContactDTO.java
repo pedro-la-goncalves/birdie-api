@@ -1,10 +1,10 @@
 package com.birdie.birdie.booking.guest.dto;
 
-import com.birdie.birdie.booking.guest.contact.EContactType;
+import com.birdie.birdie.booking.guest.contact.ContactType;
 
 public record GuestContactDTO(
 
-        EContactType type,
+        ContactType type,
 
         String value
 

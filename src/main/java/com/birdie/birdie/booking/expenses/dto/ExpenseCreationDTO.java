@@ -1,12 +1,12 @@
 package com.birdie.birdie.booking.expenses.dto;
 
-import com.birdie.birdie.booking.expenses.EExpenseType;
+import com.birdie.birdie.booking.expenses.ExpenseType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record ExpenseCreationDTO(
 
-        EExpenseType type,
+        ExpenseType type,
 
         String title,
 

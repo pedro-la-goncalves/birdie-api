@@ -1,4 +1,4 @@
-package com.birdie.birdie.util.annotation;
+package com.birdie.birdie.booking.guest.contact.annotation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

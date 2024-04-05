@@ -1,7 +1,7 @@
 package com.birdie.birdie.booking.guest.contact.dto;
 
 import com.birdie.birdie.booking.guest.contact.Contact;
-import com.birdie.birdie.booking.guest.contact.EContactType;
+import com.birdie.birdie.booking.guest.contact.ContactType;
 import jakarta.validation.constraints.NotNull;
 
 public record ContactDTO(
@@ -9,7 +9,7 @@ public record ContactDTO(
         @NotNull
         Long id,
 
-        EContactType type,
+        ContactType type,
 
         String value
 

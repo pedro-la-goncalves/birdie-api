@@ -21,7 +21,7 @@ public class Contact {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private EContactType type;
+    private ContactType type;
 
     @Column
     private String value;
@@ -30,7 +30,7 @@ public class Contact {
     @JoinColumn(name = "guest_id")
     private Guest guest;
 
-    public Contact(EContactType type, String value, Guest guest) {
+    public Contact(ContactType type, String value, Guest guest) {
         this.type = type;
         this.value = value;
         this.guest = guest;

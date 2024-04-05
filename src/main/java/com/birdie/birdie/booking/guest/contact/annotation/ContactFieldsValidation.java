@@ -1,6 +1,6 @@
-package com.birdie.birdie.util.annotation;
+package com.birdie.birdie.booking.guest.contact.annotation;
 
-import com.birdie.birdie.booking.guest.contact.EContactType;
+import com.birdie.birdie.booking.guest.contact.ContactType;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.BeanWrapperImpl;
@@ -20,9 +20,9 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
         Object contactType = new BeanWrapperImpl(contact).getPropertyValue("type");
         Object contactValue = new BeanWrapperImpl(contact).getPropertyValue("value");
 
-        if (EContactType.EMAIL.equals(contactType)) return isEmailValid(constraintValidatorContext, contactValue);
-        else if (EContactType.PHONE.equals(contactType)) return isPhoneValid(constraintValidatorContext, contactValue);
-        else if (EContactType.OTHER.equals(contactType)) return isContactValid(constraintValidatorContext, contactValue);
+        if (ContactType.EMAIL.equals(contactType)) return isEmailValid(constraintValidatorContext, contactValue);
+        else if (ContactType.PHONE.equals(contactType)) return isPhoneValid(constraintValidatorContext, contactValue);
+        else if (ContactType.OTHER.equals(contactType)) return isContactValid(constraintValidatorContext, contactValue);
 
         return false;
     }
@@ -31,7 +31,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
         boolean isValid =  Pattern.compile(EMAIL_VALIDATION_REGEX).matcher((CharSequence) contactValue).matches();
 
         if (!isValid) {
-            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: exemplo@exemplo.com", EContactType.EMAIL));
+            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: exemplo@exemplo.com", ContactType.EMAIL));
             return false;
         }
 
@@ -42,7 +42,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
         boolean isValid =  Pattern.compile(PHONE_VALIDATION_REGEX).matcher((CharSequence) contactValue).matches();
 
         if (!isValid) {
-            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: 047999999999", EContactType.PHONE));
+            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: 047999999999", ContactType.PHONE));
             return false;
         }
 
@@ -51,7 +51,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
 
     private boolean isContactValid(ConstraintValidatorContext constraintValidatorContext, Object contactValue) {
         if (Objects.isNull(contactValue) || String.valueOf(contactValue).isBlank() || String.valueOf(contactValue).isEmpty()) {
-            customMessageForValidation(constraintValidatorContext, String.format("valor inválido para contato do tipo %s", EContactType.OTHER));
+            customMessageForValidation(constraintValidatorContext, String.format("valor inválido para contato do tipo %s", ContactType.OTHER));
             return false;
         }
         return true;
