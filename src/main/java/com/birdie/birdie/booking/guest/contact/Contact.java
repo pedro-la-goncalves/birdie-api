@@ -23,7 +23,7 @@ public class Contact {
     @Enumerated(EnumType.STRING)
     private ContactType type;
 
-    @Column
+    @Column(unique = true)
     private String value;
 
     @ManyToOne

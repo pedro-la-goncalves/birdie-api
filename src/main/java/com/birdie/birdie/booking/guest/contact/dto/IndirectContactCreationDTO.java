@@ -8,8 +8,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @ContactFields
-public record ContactIndirectCreationDTO(
-
+public record IndirectContactCreationDTO(
     @NotNull
     ContactType type,
 
@@ -18,6 +17,5 @@ public record ContactIndirectCreationDTO(
 
     @Valid
     GuestDTO guest
-
 ) {
 }

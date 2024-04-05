@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Constraint(validatedBy = ContactFieldsValidation.class)
 @Documented
 public @interface ContactFields {
-    String message() default "contato inválido";
+    String message() default "contact value is invalid";
 
     Class<?>[] groups() default {};
 

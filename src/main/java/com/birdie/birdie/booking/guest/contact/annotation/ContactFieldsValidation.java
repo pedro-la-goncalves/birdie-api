@@ -31,7 +31,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
         boolean isValid =  Pattern.compile(EMAIL_VALIDATION_REGEX).matcher((CharSequence) contactValue).matches();
 
         if (!isValid) {
-            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: exemplo@exemplo.com", ContactType.EMAIL));
+            customMessageForValidation(constraintValidatorContext, String.format("field \"value\" must have a valid value for type %s like: example@example.com", ContactType.EMAIL));
             return false;
         }
 
@@ -42,7 +42,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
         boolean isValid =  Pattern.compile(PHONE_VALIDATION_REGEX).matcher((CharSequence) contactValue).matches();
 
         if (!isValid) {
-            customMessageForValidation(constraintValidatorContext, String.format("campo \"value\" deve conter um valor válido para o tipo %s, como: 047999999999", ContactType.PHONE));
+            customMessageForValidation(constraintValidatorContext, String.format("field \"value\" must have a valid value for type %s like: 999999999999", ContactType.PHONE));
             return false;
         }
 
@@ -51,7 +51,7 @@ public class ContactFieldsValidation implements ConstraintValidator<ContactField
 
     private boolean isContactValid(ConstraintValidatorContext constraintValidatorContext, Object contactValue) {
         if (Objects.isNull(contactValue) || String.valueOf(contactValue).isBlank() || String.valueOf(contactValue).isEmpty()) {
-            customMessageForValidation(constraintValidatorContext, String.format("valor inválido para contato do tipo %s", ContactType.OTHER));
+            customMessageForValidation(constraintValidatorContext, String.format("field \"value\" must have a valid value for type %s", ContactType.OTHER));
             return false;
         }
         return true;
