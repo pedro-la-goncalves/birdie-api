@@ -27,7 +27,7 @@ public record CheckedInReservationDTO(
     public CheckedInReservationDTO(Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getEntry(),
+                reservation.getArrival(),
                 reservation.getDeparture(),
                 reservation.getCheckIn(),
                 reservation.getAccommodation(),

@@ -14,7 +14,7 @@ public record ReservationUpdateDTO(
     Long id,
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    LocalDate entry,
+    LocalDate arrival,
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate departure,

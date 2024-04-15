@@ -30,7 +30,7 @@ public record CheckedOutReservationDTO(
     public CheckedOutReservationDTO(Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getEntry(),
+                reservation.getArrival(),
                 reservation.getDeparture(),
                 reservation.getCheckIn(),
                 reservation.getCheckOut(),

@@ -16,7 +16,7 @@ public record ReservationCreationDTO(
 
         @JsonFormat(pattern = "yyyy-MM-dd")
         @FutureOrPresent
-        LocalDate entry,
+        LocalDate arrival,
 
         @JsonFormat(pattern = "yyyy-MM-dd")
         @FutureOrPresent

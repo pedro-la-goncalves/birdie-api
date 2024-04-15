@@ -29,7 +29,7 @@ public class Reservation {
 
     @Column
     @FutureOrPresent
-    private LocalDate entry;
+    private LocalDate arrival;
 
     @Column
     @FutureOrPresent
@@ -51,24 +51,24 @@ public class Reservation {
     @JoinColumn(name = "accommodation_id")
     private Accommodation accommodation;
 
-    @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private List<Expense> expenses;
 
     public Reservation(ReservationDTO booking) {
         this.id = booking.id();
-        this.entry = booking.entry();
-        this.departure = booking.departure();
+        this.arrival = LocalDate.parse(booking.arrival());
+        this.departure = LocalDate.parse(booking.departure());
     }
 
     public Reservation(ReservationCreationDTO booking) {
-        this.entry = booking.entry();
+        this.arrival = booking.arrival();
         this.departure = booking.departure();
         this.guest = booking.guest();
         this.accommodation = booking.accommodation();
     }
 
     public Reservation update(ReservationUpdateDTO booking) {
-        if (booking.entry() != null) this.entry = booking.entry();
+        if (booking.arrival() != null) this.arrival = booking.arrival();
         if (booking.departure() != null) this.departure = booking.departure();
         if (booking.guest() != null) this.guest = new Guest(booking.guest());
         if (booking.accommodation() != null) this.accommodation = new Accommodation(booking.accommodation());
