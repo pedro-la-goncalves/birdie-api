@@ -1,8 +1,9 @@
 package com.birdie.api.booking.reservation.checkin.dto;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
@@ -12,7 +13,8 @@ public record CheckInReservationDTO(
         @NotNull
         Long id,
 
-        @JsonAlias(value = "check_in")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        @PastOrPresent
         LocalDateTime checkIn
 
 ) {

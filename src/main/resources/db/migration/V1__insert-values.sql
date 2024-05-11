@@ -61,6 +61,39 @@ INSERT INTO public.reservation (arrival, departure, guest_id, accommodation_id)
         ('2024-04-10', '2024-04-20', 9, 9),
         ('2024-04-10', '2024-04-20', 10, 10);
 
-UPDATE public.reservation SET arrival = NOW() WHERE id IN (1, 2, 3, 4, 5);
-UPDATE public.reservation SET check_in = NOW() WHERE id IN (1, 2, 3, 4, 5);
-UPDATE public.reservation SET departure = NOW() WHERE id IN (6, 7, 8, 9, 10);
+
+UPDATE public.reservation
+SET
+	arrival = NOW(),
+	departure = NOW() + INTERVAL '1 WEEK',
+	check_in = NOW(),
+	check_out = NULL
+WHERE
+	id IN (1);
+
+UPDATE public.reservation
+SET
+	arrival = NOW(),
+	departure = NOW() + INTERVAL '1 WEEK',
+	check_in = NULL,
+	check_out = NULL
+WHERE
+	id IN (2, 3, 4, 5);
+
+UPDATE public.reservation
+SET
+	arrival = NOW() - INTERVAL '1 WEEK',
+	departure = NOW(),
+	check_in = NOW() - INTERVAL '1 WEEK',
+	check_out = NOW()
+WHERE
+	id IN (6);
+
+UPDATE public.reservation
+SET
+	arrival = NOW() - INTERVAL '1 WEEK',
+	departure = NOW(),
+	check_in = NOW() - INTERVAL '1 WEEK',
+	check_out = NULL
+WHERE
+	id IN (7, 8, 9, 10);

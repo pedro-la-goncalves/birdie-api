@@ -6,11 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.util.Locale;
 
 @SpringBootApplication
-public class BirdieApplication {
+public class Application {
 
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.ENGLISH);
-		SpringApplication.run(BirdieApplication.class, args);
+		SpringApplication.run(Application.class, args);
 	}
 
 }

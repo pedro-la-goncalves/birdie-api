@@ -28,19 +28,15 @@ public class Reservation {
     private Long id;
 
     @Column
-    @FutureOrPresent
     private LocalDate arrival;
 
     @Column
-    @FutureOrPresent
     private LocalDate departure;
 
     @Column(name = "check_in")
-    @PastOrPresent
     private LocalDateTime checkIn;
 
     @Column(name = "check_out")
-    @PastOrPresent
     private LocalDateTime checkOut;
 
     @ManyToOne()

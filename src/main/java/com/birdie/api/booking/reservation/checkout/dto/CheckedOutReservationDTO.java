@@ -1,41 +1,35 @@
 package com.birdie.api.booking.reservation.checkout.dto;
 
 import com.birdie.api.booking.reservation.Reservation;
-import com.birdie.api.booking.reservation.guest.Guest;
-import com.birdie.api.booking.reservation.accommodation.Accommodation;
-import com.fasterxml.jackson.annotation.JsonAlias;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import com.birdie.api.booking.reservation.accommodation.dto.AccommodationDTO;
+import com.birdie.api.booking.reservation.guest.dto.GuestDTO;
 
 public record CheckedOutReservationDTO(
 
         Long id,
 
-        LocalDate entry,
+        String entry,
 
-        LocalDate departure,
+        String departure,
 
-        @JsonAlias(value = "check_in")
-        LocalDateTime checkIn,
+        String checkIn,
 
-        @JsonAlias(value = "check_out")
-        LocalDateTime checkOut,
+        String checkOut,
 
-        Accommodation accommodation,
+        AccommodationDTO accommodation,
 
-        Guest guest
+        GuestDTO guest
 
 ) {
     public CheckedOutReservationDTO(Reservation reservation) {
         this(
                 reservation.getId(),
-                reservation.getArrival(),
-                reservation.getDeparture(),
-                reservation.getCheckIn(),
-                reservation.getCheckOut(),
-                reservation.getAccommodation(),
-                reservation.getGuest()
+                String.valueOf(reservation.getArrival()),
+                String.valueOf(reservation.getDeparture()),
+                String.valueOf(reservation.getCheckIn()),
+                String.valueOf(reservation.getCheckOut()),
+                new AccommodationDTO(reservation.getAccommodation()),
+                new GuestDTO(reservation.getGuest())
         );
     }
 }
